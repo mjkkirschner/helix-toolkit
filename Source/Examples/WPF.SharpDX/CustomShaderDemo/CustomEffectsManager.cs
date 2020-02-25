@@ -72,7 +72,7 @@ namespace CustomShaderDemo
                 InputLayoutDescription = new InputLayoutDescription(CustomVSShaderDescription.VSMeshDataSamplerByteCode, DefaultInputLayout.VSInput),
                 PassDescriptions = new[]
                 {
-                    new ShaderPassDescription(DefaultPassNames.ColorStripe1D)
+                    new ShaderPassDescription(DefaultPassNames.Default)
                     {
                         ShaderList = new[]
                         {
@@ -80,6 +80,7 @@ namespace CustomShaderDemo
                             //DefaultVSShaderDescriptions.VSMeshDefault,
                             CustomPSShaderDescription.PSDataSampling
                         },
+                        
                         BlendStateDescription = DefaultBlendStateDescriptions.BSAlphaBlend,
                         DepthStencilStateDescription = DefaultDepthStencilDescriptions.DSSDepthLess
                     },

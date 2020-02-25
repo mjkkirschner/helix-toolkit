@@ -23,6 +23,7 @@ namespace CustomShaderDemo
     using System.Windows.Input;
     using System;
     using SharpDX.Direct3D11;
+    using System.Windows;
 
     public class MainViewModel : BaseViewModel
     {
@@ -30,8 +31,10 @@ namespace CustomShaderDemo
         public MeshGeometry3D SphereModel { get; private set; }
         public LineGeometry3D AxisModel { get; private set; }
         public BillboardText3D AxisLabel { private set; get; }
-        public ColorStripeMaterial ModelMaterial { get; private set; } = new ColorStripeMaterial();
+        public PhongMaterial ModelMaterial { get; private set; } = PhongMaterials.BlackRubber;
         public PhongMaterial SphereMaterial { private set; get; } = PhongMaterials.Copper;
+        public Vector3D LightDirection { get; private set; }
+        public Vector3D LightDirectionCam { get; private set; }
 
         private Color startColor;
         /// <summary>
@@ -97,7 +100,7 @@ namespace CustomShaderDemo
             {
                 if(SetValue(ref colorGradient, value))
                 {
-                    ModelMaterial.ColorStripeX = value;
+                 //   ModelMaterial.ColorStripeX = value;
                 }
             }
             get { return colorGradient; }
@@ -167,6 +170,9 @@ namespace CustomShaderDemo
             MidColor = Colors.Green;
             EndColor = Colors.Red;
 
+            Model.Colors = new Color4Collection(GetGradients(startColor.ToColor4(), midColor.ToColor4(), endColor.ToColor4(), Model.Positions.Count));
+            Model.UpdateColors();
+
             var lineBuilder = new LineBuilder();
             lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(10, 0, 0));
             lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(0, 10, 0));
@@ -192,6 +198,19 @@ namespace CustomShaderDemo
 
             GenerateNoiseCommand = new RelayCommand((o) => { CreatePerlinNoise(); });
             CreatePerlinNoise();
+            this.LightDirection = new Vector3D(0, 1, 0);
+            this.LightDirectionCam = new Vector3D(0, 1, 0);
+
+            this.Camera.Changed += Camera_Changed;
+
+        }
+
+        private void Camera_Changed(object sender, EventArgs e)
+        {
+            var dir = ((sender as PerspectiveCamera).LookDirection * -1);
+            dir.Normalize();
+            this.LightDirectionCam = dir ;
+            OnPropertyChanged("LightDirectionCam");
         }
 
         public static IEnumerable<Color4> GetGradients(Color4 start, Color4 mid, Color4 end, int steps)

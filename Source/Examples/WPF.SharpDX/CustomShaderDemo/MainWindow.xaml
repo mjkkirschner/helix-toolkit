@@ -65,7 +65,7 @@
                 <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
                 <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
             </hx:Viewport3DX.InputBindings>
-            <hx:DirectionalLight3D Direction="{Binding Camera.LookDirection}" Color="White" />
+            <hx:DirectionalLight3D Direction="{Binding LightDirectionCam}" Color="White" />
             <local:CustomMeshGeometryModel3D
                 x:Name="dataVisual"
                 FillMode="{Binding FillMode}"

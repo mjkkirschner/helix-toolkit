@@ -3,13 +3,11 @@
 #include"Common.hlsl"
 #include"CommonBuffers.hlsl"
 
-//--------------------------------------------------------------------------------------
-// Blinn-Phong Lighting Reflection Model
-//--------------------------------------------------------------------------------------
-// Returns the sum of the diffuse and specular terms in the Blinn-Phong reflection model.
-float4 calcBlinnPhongLighting(float4 LColor, float4 vMaterialTexture, float3 N, float4 diffuse, float3 L, float3 H)
+float4 calcPhongLighting(float4 LColor, float4 vMaterialTexture, float3 N, float3 L, float3 V, float3 R)
 {
-    return LColor * pow(0.5- saturate(dot(N, H)), 4);
+    float4 Id = vMaterialTexture * float4(1,1,1,1) * saturate(dot(N, L));
+    float4 Is = vMaterialSpecular * pow(saturate(dot(R, V)), sMaterialShininess);
+    return (Id + Is) * LColor;
 }
 
 float4 main(PSInput input) : SV_Target
@@ -31,9 +29,9 @@ float4 main(PSInput input) : SV_Target
         {
             float3 d = normalize((float3) Lights[i].vLightDir); // light dir	
             float3 h = normalize(eye + d);
-            DI += calcBlinnPhongLighting(Lights[i].vLightColor, vMaterialTexture, input.n, input.cDiffuse, d, h);
+            DI += calcPhongLighting(Lights[i].vLightColor, input.c, input.n, d, eye, h);
         }
     }
     DI.a = 1; 
-    return DI + vMaterialTexture;
+    return DI * input.c;
 }
